@@ -1,0 +1,89 @@
+{
+  "id": "donnaHomeValLead1",
+  "name": "DONNA-M — Home Valuation Lead → Email Mallory",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Chicago"
+  },
+  "nodes": [
+    {
+      "id": "b1c0a001-0000-4000-8000-000000000001",
+      "name": "Home Valuation Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "5f3e6a2c-8d41-4c7b-9a10-d0a7e11a1a01",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "home-valuation",
+        "responseMode": "onReceived",
+        "options": {
+          "allowedOrigins": "https://txasc.github.io,https://lpjproperties.github.io"
+        }
+      }
+    },
+    {
+      "id": "b1c0a001-0000-4000-8000-000000000002",
+      "name": "Validate + Format Lead",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Drops bots (hidden honeypot field filled) and incomplete submissions,\n// then builds the notification email for Mallory.\nconst b = $input.first().json.body || {};\nconst clean = (v, max = 500) => String(v ?? '').trim().slice(0, max);\nconst esc = (v) => clean(v).replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c]));\n\nif (clean(b.website)) return [];\nconst lead = {\n  fullName: clean(b.fullName, 120),\n  phone: clean(b.phone, 40),\n  email: clean(b.email, 160),\n  address: clean(b.address, 240),\n  timeframe: clean(b.timeframe, 60) || 'Not specified',\n  notes: clean(b.notes, 2000),\n};\nif (!lead.fullName || !lead.address || !(lead.phone || lead.email)) return [];\nif (lead.email && !/^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(lead.email)) lead.email = '';\n\nconst received = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago', dateStyle: 'medium', timeStyle: 'short' });\nconst tel = lead.phone.replace(/[^0-9+]/g, '');\nconst maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(lead.address);\nconst row = (k, v) => `<tr><td style=\"padding:6px 14px 6px 0;color:#6b6b6b;white-space:nowrap;vertical-align:top\">${k}</td><td style=\"padding:6px 0;color:#1a1a1a\">${v}</td></tr>`;\n\nconst html = `<div style=\"font-family:Arial,Helvetica,sans-serif;max-width:560px\">\n<div style=\"background:#0b0b0b;color:#fff;padding:14px 18px;border-bottom:4px solid #b8102e\"><strong>New Home Valuation Lead</strong></div>\n<div style=\"padding:16px 18px;border:1px solid #e3e3e3;border-top:0\">\n<p style=\"margin:0 0 12px\">${esc(lead.fullName)} requested a free home valuation. Follow up soon.</p>\n<table style=\"border-collapse:collapse;font-size:14px\">\n${row('Name', esc(lead.fullName))}\n${row('Phone', lead.phone ? `<a href=\"tel:${tel}\">${esc(lead.phone)}</a>` : '—')}\n${row('Email', lead.email ? `<a href=\"mailto:${esc(lead.email)}\">${esc(lead.email)}</a>` : '—')}\n${row('Property', `<a href=\"${maps}\">${esc(lead.address)}</a>`)}\n${row('Timeframe', esc(lead.timeframe))}\n${row('Notes', lead.notes ? esc(lead.notes).replace(/\\n/g, '<br>') : '—')}\n${row('Received', received)}\n</table>\n<p style=\"margin:14px 0 0;color:#6b6b6b;font-size:12px\">Source: Home Valuation landing page (QR). Reply to this email to respond to the lead directly.</p>\n</div></div>`;\n\nreturn [{ json: { ...lead, received, subject: `New Home Valuation Lead: ${lead.fullName} (${lead.address})`, html } }];"
+      }
+    },
+    {
+      "id": "b1c0a001-0000-4000-8000-000000000003",
+      "name": "Email Mallory",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        520,
+        0
+      ],
+      "parameters": {
+        "fromEmail": "Home Valuation Leads <mallorya407@gmail.com>",
+        "toEmail": "mallorya@kw.com",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "html",
+        "html": "={{ $json.html }}",
+        "options": {
+          "replyTo": "={{ $json.email || 'mallorya407@gmail.com' }}",
+          "appendAttribution": false
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Home Valuation Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate + Format Lead",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate + Format Lead": {
+      "main": [
+        [
+          {
+            "node": "Email Mallory",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {}
+}

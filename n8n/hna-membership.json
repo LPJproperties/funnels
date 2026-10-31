@@ -1,0 +1,89 @@
+{
+  "id": "donnaHnaMember1",
+  "name": "HNA — 2027 Membership Signup → Email President",
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "timezone": "America/Chicago"
+  },
+  "nodes": [
+    {
+      "id": "c2d0b001-0000-4000-8000-000000000001",
+      "name": "HNA Membership Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        0,
+        0
+      ],
+      "webhookId": "8a4f2c1e-6b3d-4e9a-b7c2-1d5e9f0a2b01",
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "hna-membership",
+        "responseMode": "onReceived",
+        "options": {
+          "allowedOrigins": "https://txasc.github.io,https://lpjproperties.github.io"
+        }
+      }
+    },
+    {
+      "id": "c2d0b001-0000-4000-8000-000000000002",
+      "name": "Validate + Format Member",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        260,
+        0
+      ],
+      "parameters": {
+        "jsCode": "// Drops bots (hidden honeypot field filled) and incomplete submissions,\n// then builds the membership notification email for the HNA president.\nconst b = $input.first().json.body || {};\nconst clean = (v, max = 500) => String(v ?? '').trim().slice(0, max);\nconst esc = (v) => clean(v).replace(/[&<>\"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',\"'\":'&#39;'}[c]));\nconst okEmail = (e) => /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(e);\n\nif (clean(b.website)) return [];\nconst m = {\n  name: clean(b.name, 120), phone: clean(b.phone, 40), email: clean(b.email, 160), address: clean(b.address, 240),\n  name2: clean(b.name2, 120), phone2: clean(b.phone2, 40), email2: clean(b.email2, 160),\n  kids: clean(b.kids, 4) || '0',\n};\nif (!m.name || !m.address || !(m.phone || m.email)) return [];\nif (m.email && !okEmail(m.email)) m.email = '';\nif (m.email2 && !okEmail(m.email2)) m.email2 = '';\nconst hasAdult2 = !!(m.name2 || m.phone2 || m.email2);\n\nconst received = new Date().toLocaleString('en-US', { timeZone: 'America/Chicago', dateStyle: 'medium', timeStyle: 'short' });\nconst tel = (p) => p ? `<a href=\"tel:${p.replace(/[^0-9+]/g, '')}\">${esc(p)}</a>` : '—';\nconst mail = (e) => e ? `<a href=\"mailto:${esc(e)}\">${esc(e)}</a>` : '—';\nconst maps = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(m.address);\nconst row = (k, v) => `<tr><td style=\"padding:6px 14px 6px 0;color:#6b7d93;white-space:nowrap;vertical-align:top\">${k}</td><td style=\"padding:6px 0;color:#1B2D44\">${v}</td></tr>`;\nconst sec = (t) => `<tr><td colspan=\"2\" style=\"padding:14px 0 4px;color:#C9A043;font-size:11px;font-weight:bold;letter-spacing:.12em;text-transform:uppercase\">${t}</td></tr>`;\n\nconst html = `<div style=\"font-family:Arial,Helvetica,sans-serif;max-width:560px\">\n<div style=\"background:#1B2D44;color:#fff;padding:14px 18px;border-bottom:4px solid #C9A043\"><strong>New 2027 HNA Membership</strong></div>\n<div style=\"padding:16px 18px;border:1px solid #e3e3e3;border-top:0\">\n<p style=\"margin:0 0 6px\">${esc(m.name)} signed up to join The Highlands Neighborhood Association for 2027.</p>\n<table style=\"border-collapse:collapse;font-size:14px\">\n${sec('Primary member')}\n${row('Name', esc(m.name))}\n${row('Phone', tel(m.phone))}\n${row('Email', mail(m.email))}\n${row('Address', `<a href=\"${maps}\">${esc(m.address)}</a>`)}\n${hasAdult2 ? sec('Additional adult') + row('Name', esc(m.name2) || '—') + row('Phone', tel(m.phone2)) + row('Email', mail(m.email2)) : ''}\n${sec('Household')}\n${row('Children under 18', esc(m.kids))}\n${row('Received', received)}\n</table>\n<p style=\"margin:14px 0 0;color:#6b7d93;font-size:12px\">Source: HNA 2027 membership page (QR). Reply to this email to respond to the member directly.</p>\n</div></div>`;\n\nreturn [{ json: { ...m, received, subject: `New HNA Membership: ${m.name} (${m.address})`, html } }];\n"
+      }
+    },
+    {
+      "id": "c2d0b001-0000-4000-8000-000000000003",
+      "name": "Email HNA President",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [
+        520,
+        0
+      ],
+      "parameters": {
+        "fromEmail": "HNA Membership <mallorya407@gmail.com>",
+        "toEmail": "president@highlandshna.com",
+        "subject": "={{ $json.subject }}",
+        "emailFormat": "html",
+        "html": "={{ $json.html }}",
+        "options": {
+          "replyTo": "={{ $json.email || 'mallorya407@gmail.com' }}",
+          "appendAttribution": false
+        }
+      }
+    }
+  ],
+  "connections": {
+    "HNA Membership Webhook": {
+      "main": [
+        [
+          {
+            "node": "Validate + Format Member",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate + Format Member": {
+      "main": [
+        [
+          {
+            "node": "Email HNA President",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {}
+}
