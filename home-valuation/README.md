@@ -9,7 +9,7 @@ https://txasc.github.io/DONNA-M/home-valuation/
 | File | What it is |
 |------|------------|
 | `index.html` | Landing page and lead form. Image paths are relative (`assets/...`). |
-| `qr.html` | In-browser QR generator. Its default URL is still the TXASC address above. The jsDelivr script it loads currently returns 404, so the canvas does not draw; the print files in `assets/` are the codes in use. |
+| `qr.html` | In-browser QR generator. Its default URL is still the TXASC address above. It uses the checked-in qrcode 1.4.4 browser build under `assets/vendor/`; the pinned hash and MIT license are stored beside it. |
 | `assets/home-valuation-qr.png` and `.svg` | Print QR codes. Left unchanged. |
 | `assets/kw-logo-white.png`, `assets/mallory-headshot.webp` | Brand images for this page. |
 

@@ -1,0 +1,27 @@
+{
+  "sources": {
+    "TXASC/DONNA-M": "b76de809bb0c5e0b5bdf6e3a7eb5e35b4cb33679",
+    "BeardedVentures/boo-tiful-home-basket": "7c08612c131b9e2cf0091e2c064b93a323cadd70"
+  },
+  "files": {
+    "home-valuation/index.html": {"sha256": "22e1cb67e05436cbed27da6865fc840cb067355e9e8498a56a5a199dbcd4882e"},
+    "home-valuation/qr.html": {"source_sha256": "e462cb87c197b236a477287762c2fdf0e8afeb7dc8079594bb7c4eaad9451b2a", "edited": "local QR library"},
+    "home-valuation/assets/home-valuation-qr.png": {"sha256": "c91efff4b4d3bd475fe8a4ce331821ed5a445ef27d0adf30680c7fa634ece579"},
+    "home-valuation/assets/home-valuation-qr.svg": {"sha256": "2e79280d85fb9bab8906b8dadb07ffd19202e44f0ea0bb1b237751c9c72b9075"},
+    "home-valuation/assets/kw-logo-white.png": {"sha256": "be6882de42b96e528eb61a0f168ec686b5f483ca5533424eb3dbe206e0245677"},
+    "home-valuation/assets/mallory-headshot.webp": {"sha256": "0a69a5bee8d38f1dfb44ce4c58bfc2c9eb250c6136362850d4744cec74a8547a"},
+    "hna/index.html": {"sha256": "dcae8bf8e6cdeadd5e6c0b5ddf4e6fb3fd5ccf8bc154477602f3d6cbe128378d"},
+    "hna/assets/hna-qr.png": {"sha256": "beaa13fc3a9898860cc44c31888da49da51cf65589575ba619d84a4e00ea5ee4"},
+    "hna/assets/hna-qr.svg": {"sha256": "0d4656b10ed30ca5ce570b62d985a9cd50aaa6ebf8cf10430f0a46d449029779"},
+    "n8n/home-valuation-lead.json": {"source_sha256": "1a83b4e4b991bf484b1da992738a6db6cd14c70ea5f8c7924b5a937be3b316a4", "edited": "LPJ CORS origin"},
+    "n8n/hna-membership.json": {"source_sha256": "2029b81670b38cdc5dc1605712bcc592f6f102103a76abe55a5dd750a65562a3", "edited": "LPJ CORS origin"},
+    "boo-basket/.nojekyll": {"sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6"},
+    "boo-basket/assets/kw-logo-white.png": {"sha256": "be6882de42b96e528eb61a0f168ec686b5f483ca5533424eb3dbe206e0245677"},
+    "boo-basket/assets/mallory-headshot.webp": {"sha256": "0a69a5bee8d38f1dfb44ce4c58bfc2c9eb250c6136362850d4744cec74a8547a"},
+    "boo-basket/config.js": {"sha256": "38166890955f5cfeb2bd77fbb777e46b3cc372ba9e3ec2c1e69cdee2271f184e"},
+    "boo-basket/index.html": {"sha256": "7dbfb3043a7adad41358998abe5e155cbfb6d54284ae37fee7f25bea538351ff"},
+    "boo-basket/src/app.mjs": {"sha256": "ded02b3d962549609e6465d162be08ef28beb0c85d00e6c2c0df059f533e1c25"},
+    "boo-basket/src/entry-core.mjs": {"sha256": "4faa4d8c70570ebb00a35af1f56b7dfff3c1e45d48326548e31f79e9ece0866d"},
+    "boo-basket/styles.css": {"sha256": "6605c28591c725e42acbb8d2921347e305ef134c427f9c9a8e6d7d768d20af7a"}
+  }
+}

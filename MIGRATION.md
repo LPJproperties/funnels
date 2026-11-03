@@ -21,6 +21,7 @@ The CORS origin is the host with no path: `https://lpjproperties.github.io`.
 ## Before any public link changes
 
 - [ ] Merge the funnel copy to `main`.
+- [ ] Confirm **Check site** passes. The Pages workflow also requires these checks before it can publish.
 - [ ] In **Settings → Pages → Build and deployment**, set **Source** to **GitHub Actions**. A workflow file cannot change this setting. If the first Actions run fails because Pages is not enabled yet, turn the setting on and re-run **Deploy to GitHub Pages**.
 - [ ] Open the four new URLs above and confirm each page paints, images load, and the form is on the page.
 - [ ] Import `n8n/home-valuation-lead.json` and `n8n/hna-membership.json` into the existing n8n instance. The workflow ids are still `donnaHomeValLead1` and `donnaHnaMember1`, so import updates those workflows.
@@ -61,7 +62,7 @@ In-page images, CSS, and scripts already use relative paths. Those were left rel
 | `https://jarvis.tailb14d90.ts.net/webhook/hna-membership` | `hna/index.html` | Same endpoint |
 | `https://jarvis.tailb14d90.ts.net/webhook/boo-tiful-home-basket` | `boo-basket/config.js` | Same endpoint |
 | `https://fonts.googleapis.com` and the Great Vibes / Playfair / Lato stylesheet | `hna/index.html` | Leave. Third-party fonts |
-| `https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js` | `home-valuation/qr.html` | Left as copied. That address returns 404, so the on-screen canvas stays blank. The print PNG and SVG in `assets/` are unaffected |
+| `assets/vendor/qrcode-1.4.4.min.js` | `home-valuation/qr.html` | Vendored from qrcode 1.4.4 because the previously copied qrcode 1.5.3 jsDelivr build URL returned 404. The pinned hash and license are beside the file. The print PNG and SVG in `assets/` are unaffected. |
 | `https://www.google.com/maps/search/?api=1&query=` plus the lead's address | inside the email HTML built by both workflow files | Leave. Map link in the notification email |
 
 Email fallbacks, if the webhook cannot be reached:

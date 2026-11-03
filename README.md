@@ -14,7 +14,8 @@ The pages that are live today stay where they are. This repository is a copy. It
 | `boo-basket/` | Boo-tiful Home Basket giveaway. Static files, no build. Copied from BeardedVentures/boo-tiful-home-basket at `7c08612c131b9e2cf0091e2c064b93a323cadd70`. |
 | `n8n/` | Workflow exports for Home Valuation and HNA. CORS in these copies allows both the old Pages host and `https://lpjproperties.github.io`. |
 | `shared/` | Notes only. Duplicated logos and similar form patterns are listed in [shared/README.md](shared/README.md) and were left inside each funnel. |
-| `.github/workflows/pages.yml` | Deploys the repository root to GitHub Pages on every push to `main`. |
+| `.github/workflows/check.yml` | Checks links, migration invariants, secrets, source hashes, and the vendored QR browser build on pull requests and non-main branch pushes. |
+| `.github/workflows/pages.yml` | Runs the same checks, then deploys the repository root to GitHub Pages on every push to `main`. |
 | `.nojekyll` | Already in the repo. Pages Actions upload the files as they are. |
 
 Image, stylesheet, and script links inside each funnel are already relative (`assets/...`, `styles.css`, `src/app.mjs`). Those were left as relative paths. Absolute URLs that point at a campaign page were left pointing at the old site so printed QR codes and the QR generator keep their current target. The full list is in [MIGRATION.md](MIGRATION.md).
@@ -34,6 +35,13 @@ Then open:
 - http://127.0.0.1:8080/home-valuation/qr.html
 - http://127.0.0.1:8080/hna/
 - http://127.0.0.1:8080/boo-basket/
+
+Run the same checks used by pull requests and the Pages workflow:
+
+```bash
+python3 -m unittest discover -s tests -p 'check_*.py' -v
+node --test tests/qr_vendor.test.mjs
+```
 
 Boo Basket loads an ES module. Use a static server. A `file://` URL will not run it. On localhost, `http://127.0.0.1:8080/boo-basket/?preview=1` mocks the submit and does not email anyone.
 
