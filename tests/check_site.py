@@ -143,7 +143,10 @@ class SiteChecks(unittest.TestCase):
             path = ROOT / relative
             self.assertTrue(path.is_file(), relative)
             if "sha256" in item:
-                digest = hashlib.sha256(path.read_bytes()).hexdigest()
+                content = path.read_bytes()
+                if path.suffix.lower() in {".html", ".svg", ".js", ".mjs", ".css"} or path.name == ".nojekyll":
+                    content = content.replace(b"\r\n", b"\n")
+                digest = hashlib.sha256(content).hexdigest()
                 self.assertEqual(item["sha256"], digest, relative)
 
     def test_10_no_secret_patterns(self):
